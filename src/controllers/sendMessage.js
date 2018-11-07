@@ -1,11 +1,11 @@
 const http = require("http");
 const saveMessage = require("../clients/saveMessage");
+const updateStatus = require("../clients/updateMessageStatus");
 const getCredit = require("../clients/getCredit");
 
 const random = n => Math.floor(Math.random() * Math.floor(n));
 
 module.exports = function(httpbody, requestID) {
-  
   const body = JSON.stringify(httpbody);
   var query = getCredit();
 
@@ -45,34 +45,21 @@ module.exports = function(httpbody, requestID) {
       let postReq = http.request(postOptions);
 
       postReq.on("response", postRes => {
+        let status;
         if (postRes.statusCode === 200) {
-          saveMessage(
-            {
-              ...httpbody,
-              requestID,
-              status: "OK"
-            },
-            function(_result, error) {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log(postRes.body);
-              }
-            }
-          );
+          console.error("Succes sending the message");
+          status = "OK";
         } else {
           console.error("Error while sending message");
-
-          saveMessage(
-            {
-              ...httpbody,
-              status: "ERROR"
-            },
-            () => {
-              console.log("Internal server error: SERVICE ERROR");
-            }
-          );
+          status = "ERROR";
         }
+        updateStatus(requestID, status, function(_result, error) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(postRes.body);
+          }
+        });
       });
 
       postReq.setTimeout(random(6000));
@@ -80,16 +67,10 @@ module.exports = function(httpbody, requestID) {
       postReq.on("timeout", () => {
         console.error("Timeout Exceeded!");
         postReq.abort();
-
-        saveMessage(
-          {
-            ...httpbody,
-            status: "TIMEOUT"
-          },
-          () => {
-            console.log("Internal server error: TIMEOUT");
-          }
-        );
+        const status = "TIMEOUT"
+        updateStatus(requestID, status, function(_result, error) {
+          console.log(error)
+        });
       });
 
       postReq.on("error", () => {});
@@ -97,7 +78,6 @@ module.exports = function(httpbody, requestID) {
       postReq.write(body);
       postReq.end();
     } else {
-      
       console.log("No credit error");
     }
   });

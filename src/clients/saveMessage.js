@@ -23,7 +23,8 @@ module.exports = function(messageParams, cb) {
         cb(undefined, error);
       }
 
-      saveMessageTransaction(messageParams, cb);
+      saveMessageTransaction(messageParams,(undefined, error)=>{console.log(error)});
     }
   );
+  return message;
 };

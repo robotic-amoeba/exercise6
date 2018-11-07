@@ -10,6 +10,7 @@ const {
 const sendMessage = require("./src/controllers/sendMessage");
 const redisQueue = require("./src/redisQueue");
 const getMessages = require("./src/controllers/getMessages");
+const getStatus = require("./src/controllers/getStatus")
 const updateCredit = require("./src/controllers/updateCredit");
 
 const app = express();
@@ -66,6 +67,8 @@ app.post(
 );
 
 app.get("/messages", getMessages);
+
+app.get("/messages/:requestID/status", getStatus);
 
 app.use(function(err, req, res, next) {
   console.log(res.body);
