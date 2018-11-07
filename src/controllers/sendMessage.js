@@ -4,17 +4,26 @@ const getCredit = require("../clients/getCredit");
 
 const random = n => Math.floor(Math.random() * Math.floor(n));
 
-module.exports = function(httpbody) {
+module.exports = function(httpbody, requestID) {
   
-  debugger;
   const body = JSON.stringify(httpbody);
-
   var query = getCredit();
-
-  debugger;
 
   query.exec(function(err, credit) {
     if (err) return console.log(err);
+
+    saveMessage(
+      {
+        ...httpbody,
+        requestID,
+        status: "PENDING"
+      },
+      function(_result, error) {
+        if (error) {
+          console.log(error);
+        }
+      }
+    );
 
     current_credit = credit[0].amount;
 
@@ -40,6 +49,7 @@ module.exports = function(httpbody) {
           saveMessage(
             {
               ...httpbody,
+              requestID,
               status: "OK"
             },
             function(_result, error) {

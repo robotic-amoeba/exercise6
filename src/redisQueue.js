@@ -1,4 +1,5 @@
 const sendMessage = require("./controllers/sendMessage");
+const uuidv1 = require("uuid/v1");
 
 var Queue = require("bull");
 
@@ -9,9 +10,14 @@ module.exports = (req, res) => {
   const httpbody = req.body;
   MessageRequests.add({ httpbody })
     .then(job => {
+      requestID = uuidv1();
       debugger;
-      res.status(200).send("message processed");
-      sendMessage(httpbody);
+      res
+        .status(200)
+        .send(
+          `Message processed. Check the status of your message using: /messages/${requestID}/status`
+        );
+      sendMessage(job.data.httpbody, requestID);
     })
-    .catch();
+    .catch((e)=>{console.log(e)});
 };
