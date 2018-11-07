@@ -4,10 +4,14 @@ const getCredit = require("../clients/getCredit");
 
 const random = n => Math.floor(Math.random() * Math.floor(n));
 
-module.exports = function(req, res) {
-  const body = JSON.stringify(req.body);
+module.exports = function(httpbody) {
+  
+  debugger;
+  const body = JSON.stringify(httpbody);
 
   var query = getCredit();
+
+  debugger;
 
   query.exec(function(err, credit) {
     if (err) return console.log(err);
@@ -35,15 +39,14 @@ module.exports = function(req, res) {
         if (postRes.statusCode === 200) {
           saveMessage(
             {
-              ...req.body,
+              ...httpbody,
               status: "OK"
             },
             function(_result, error) {
               if (error) {
-                res.statusCode = 500;
-                res.end(error);
+                console.log(error);
               } else {
-                res.end(postRes.body);
+                console.log(postRes.body);
               }
             }
           );
@@ -52,12 +55,11 @@ module.exports = function(req, res) {
 
           saveMessage(
             {
-              ...req.body,
+              ...httpbody,
               status: "ERROR"
             },
             () => {
-              res.statusCode = 500;
-              res.end("Internal server error: SERVICE ERROR");
+              console.log("Internal server error: SERVICE ERROR");
             }
           );
         }
@@ -71,12 +73,11 @@ module.exports = function(req, res) {
 
         saveMessage(
           {
-            ...req.body,
+            ...httpbody,
             status: "TIMEOUT"
           },
           () => {
-            res.statusCode = 500;
-            res.end("Internal server error: TIMEOUT");
+            console.log("Internal server error: TIMEOUT");
           }
         );
       });
@@ -86,8 +87,8 @@ module.exports = function(req, res) {
       postReq.write(body);
       postReq.end();
     } else {
-      res.statusCode = 500;
-      res.end("No credit error");
+      
+      console.log("No credit error");
     }
   });
 };

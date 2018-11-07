@@ -8,6 +8,7 @@ const {
 } = require("express-json-validator-middleware");
 
 const sendMessage = require("./src/controllers/sendMessage");
+const redisQueue = require("./src/redisQueue");
 const getMessages = require("./src/controllers/getMessages");
 const updateCredit = require("./src/controllers/updateCredit");
 
@@ -54,7 +55,7 @@ app.post(
   "/messages",
   bodyParser.json(),
   validate({ body: messageSchema }),
-  sendMessage
+  redisQueue
 );
 
 app.post(
