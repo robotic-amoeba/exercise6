@@ -5,7 +5,8 @@ const getCredit = require("../clients/getCredit");
 
 const random = n => Math.floor(Math.random() * Math.floor(n));
 
-module.exports = function(httpbody, requestID) {
+module.exports = function(httpbody) {
+  const requestID = httpbody.requestID;
   const body = JSON.stringify(httpbody);
   var query = getCredit();
 

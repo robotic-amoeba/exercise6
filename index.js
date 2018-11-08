@@ -52,6 +52,8 @@ const creditSchema = {
   }
 };
 
+const worker = require("./src/worker")
+
 app.post(
   "/messages",
   bodyParser.json(),

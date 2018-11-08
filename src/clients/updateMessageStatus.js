@@ -3,6 +3,7 @@ const updateCreditTransaction = require("../transactions/updateCredit");
 const saveMessageTransaction = require("../transactions/saveMessage");
 
 module.exports = function(requestID, status, cb) {
+  console.log("entraaaa")
   return Message()
     .findOneAndUpdate({ requestID }, { status }, { new: true })
     .then(message => {
